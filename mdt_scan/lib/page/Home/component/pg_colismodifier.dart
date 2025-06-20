@@ -106,15 +106,17 @@ class PgColisModifier extends StatelessWidget {
         children: [
           Flexible(
             flex: 4,
-            child: Text(
-              "$label :",
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              softWrap: false,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                  color: Colors.black87),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                "$label :",
+                maxLines: 1,
+                softWrap: false,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    color: Colors.black87),
+              ),
             ),
           ),
           Flexible(

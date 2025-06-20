@@ -1,9 +1,10 @@
 class BagagesModel {
+  final String? id;
   final String? codeBagage;
   final String? refVoyage;
   final String? refEnvoie;
-  final double? valeurEstimee;
-  final double? prixBagage;
+  final int? valeurEstimee;
+  final int? prixBagage;
   final String? description;
   final String? dateBagage;
   final String? photoBagage;
@@ -15,39 +16,43 @@ class BagagesModel {
   final String? numSiege;
   final String? matCar;
   final String? nomConducteur;
+  final String? matConducteur;
   final String? codeGare;
   final String? nomGare;
-  final bool? bagageIntrouvable;
+  bool? bagageIntrouvable;
 
   BagagesModel({
-     this.codeBagage,
-     this.refVoyage,
-     this.refEnvoie,
-     this.valeurEstimee,
-     this.prixBagage,
-     this.description,
-     this.dateBagage,
-     this.photoBagage,
-     this.envoyer,
-     this.dateEnvoie,
-     this.codeClient,
-     this.nomClient,
-     this.contactClient,
-     this.numSiege,
-     this.matCar,
-     this.nomConducteur,
-     this.codeGare,
-     this.nomGare,
-     this.bagageIntrouvable,
+    this.id,
+    this.codeBagage,
+    this.refVoyage,
+    this.refEnvoie,
+    this.valeurEstimee,
+    this.prixBagage,
+    this.description,
+    this.dateBagage,
+    this.photoBagage,
+    this.envoyer,
+    this.dateEnvoie,
+    this.codeClient,
+    this.nomClient,
+    this.contactClient,
+    this.numSiege,
+    this.matCar,
+    this.nomConducteur,
+    this.matConducteur,
+    this.codeGare,
+    this.nomGare,
+    this.bagageIntrouvable,
   });
 
   factory BagagesModel.fromJson(Map<String, dynamic> json) {
     return BagagesModel(
+      id: json['id'],
       codeBagage: json['codebagage'] ?? '',
       refVoyage: json['refvoyage'] ?? '',
       refEnvoie: json['refenvoie'] ?? '',
-      valeurEstimee: (json['valeurestimee'] ?? 0).toDouble(),
-      prixBagage: (json['prixbagage'] ?? 0).toDouble(),
+      valeurEstimee: (json['valeurestimee'] ?? 0),
+      prixBagage: (json['prixbagage'] ?? 0),
       description: json['description'] ?? '',
       dateBagage: json['datebagage'] ?? '',
       photoBagage: json['photobagage'] ?? '',
@@ -57,12 +62,9 @@ class BagagesModel {
       nomClient: json['nomclient'] ?? '',
       contactClient: json['contactclient'] ?? '',
       numSiege: json['numsiege'] ?? '',
-      matCar: json['ref_voyages']?['carremplacement'] ??
-          json['ref_voyages']?['matcar'] ??
-          '',
-      nomConducteur: json['ref_voyages']?['conducteurremplacement'] ??
-          json['ref_voyages']?['nomconducteur'] ??
-          '',
+      matCar: json['matcar'],
+      nomConducteur: json['nomconducteur'],
+      matConducteur: json['matconducteur'],
       codeGare: json['codegare'] ?? '',
       nomGare: json['gares']?['nomgare'] ?? '',
       bagageIntrouvable: json['bagageintrouvable'] ?? false,

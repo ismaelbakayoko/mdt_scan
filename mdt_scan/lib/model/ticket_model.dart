@@ -16,12 +16,17 @@ class TicketModel {
   String? matGuichetiere;
   String? nomGuichetiere;
   String? prenomsGuichetiere;
+  String? nomController;
+  String? matController;
+  String? trajectoire;
   bool? ticketUtiliser;
   bool? clientBagage;
   bool? isRemplaced;
   bool? siegeVacant;
   bool? oldAbsent;
   bool? paiementEnLigne;
+  String? nomConducteur;
+  String? matConducteur;
 
   TicketModel({
     this.id,
@@ -47,6 +52,11 @@ class TicketModel {
     this.clientBagage,
     this.isRemplaced,
     this.paiementEnLigne,
+    this.nomController,
+    this.matController,
+    this.trajectoire,
+    this.nomConducteur,
+    this.matConducteur,
   });
 
   factory TicketModel.fromJson(Map<String, dynamic> json) {
@@ -68,15 +78,19 @@ class TicketModel {
       matCar: json['matcar'] ?? json['matCar'],
       matCarRemplace: json['matcar_remplacement'],
       siegeVacant: json['siegevacant'] ?? json['siegeVacant'],
-      oldAbsent: json['etaitabsent'],
-      ticketUtiliser: json['ticketutiliser'] ?? json['ticketUtiliser'],
+      oldAbsent: json['etaitabsent'] ?? false,
+      ticketUtiliser: json['ticketconsommer'] ?? json['ticketconsommer'],
       clientBagage: json['clientbagage'] ?? json['clientBagage'],
-      isRemplaced: json['isRemplaced'] ?? json['isremplaced'],
+      isRemplaced: json['isRemplaced'] ?? json['isremplaced']??false,
       dateTicket: json['dateticket'] ?? json['dateTicket'],
       matGuichetiere: json['matguichetiere'] ?? json['matGuichetiere'],
       nomGuichetiere: json['nomguichetiere'] ?? json['nomGuichetiere'],
-      prenomsGuichetiere:
-          json['prenomsguichetiere'] ?? json['prenomsGuichetiere'],
+      prenomsGuichetiere: json['prenomsguichetiere'] ?? json['prenomsGuichetiere'],
+      trajectoire: json['trajectoire'],
+      nomController: json['nomcontroleurticket'],
+      matController: json['matcontroleurticket'],
+      nomConducteur: json['nomconducteur'],
+      matConducteur: json['matconducteur'],
     );
   }
 }

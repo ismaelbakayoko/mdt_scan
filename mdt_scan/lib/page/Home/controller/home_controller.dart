@@ -59,6 +59,7 @@ class HomeController extends GetxController {
     required String id,
     required String reference,
   }) async {
+    print("❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌");
     var bodyData = {
       'id': id,
       'reference': reference,
@@ -76,7 +77,7 @@ class HomeController extends GetxController {
 
       if (donnee["success"] == true) {
         var data = donnee["resultat"];
-         closeLoadingCircular();
+        closeLoadingCircular();
 
         var type = donnee["type"];
         print(type);
@@ -144,6 +145,61 @@ class HomeController extends GetxController {
         break;
       default:
         print("Aucune vue associée au type : $type");
+    }
+  }
+
+  // statu de colis et bagages
+  Future<bool> fetchStatuColisBagage(
+    context, {
+    required String? id,
+    required String? code,
+    required bool? statu,
+    required String? table,
+  }) async {
+    var bodyData = {
+      'id': id,
+      'code': code,
+      'statut': statu,
+      'table': table,
+    };
+    print(bodyData);
+    loadingCircular();
+    try {
+      final response = await http.post(
+        Uri.parse("$apiUrl/controleTickets/bagage-colis-retrouver"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(bodyData),
+      );
+      var donnee = json.decode(response.body);
+      print(donnee);
+
+      if (donnee["success"] == true) {
+        var data = donnee["resultat"];
+        if (table == "BAGAGE") {
+          listBagage.value.bagageIntrouvable = data;
+        } else if (table == "COLIS") {
+          listColi.value.colisintrouvable = data;
+        }
+        closeLoadingCircular();
+
+        return true;
+      } else {
+        closeLoadingCircular();
+        errorDialog("", errorText: donnee["message"]);
+        if (table == "BAGAGE") {
+          listBagage.value.bagageIntrouvable =
+              !listBagage.value.bagageIntrouvable!;
+          listBagage.refresh();
+        } else if (table == "COLIS") {
+          listColi.value.colisintrouvable = !listColi.value.colisintrouvable!;
+          listColi.refresh();
+        }
+        return false;
+      }
+    } catch (e) {
+      closeLoadingCircular();
+      errorDialog("Erreur", errorText: "Une erreur s’est produite : $e");
+      return false;
     }
   }
 }

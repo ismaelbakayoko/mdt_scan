@@ -25,13 +25,14 @@ class PgTicket extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
           title: const Text(
-            "Détails du Ticket",
+            "Détails du ticket",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           backgroundColor: Colors.red,
           centerTitle: true,
           leading: IconButton(
             onPressed: () {
+              controller.scannedValue.value = "";
               Get.back();
             },
             icon: const Icon(
@@ -54,16 +55,43 @@ class PgTicket extends StatelessWidget {
                 _sectionTitle("Voyage"),
                 _infoRow("Réf voyage", ticket.refVoyage),
                 _infoRow("Matricule car", ticket.matCar),
+                 _infoRow("Conducteur", ticket.nomConducteur),
+                  _infoRow("Mat conducteur", ticket.matConducteur),
                 const SizedBox(height: 5),
                 _divider(),
                 _sectionTitle("Trajet"),
-                _infoRow("Gare de départ", ticket.nomGare),
+                _infoRow("Gare d'achat", ticket.nomGare),
                 _infoRow("Destination", ticket.destination),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                    const  Text(
+                        "Trajectoire :",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Expanded(
+                        child: Wrap(
+                          spacing: 4,
+                          runSpacing: 2,
+                          children:
+                              _buildTrajectoireWidgets(ticket.trajectoire),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 5),
                 _divider(),
                 _sectionTitle("Siège"),
                 _infoRow("Numéro siège", ticket.numSiege),
-                _infoRow("Siège remplacé", ticket.numSiegeRemplace),
+                _infoRow("Siège remplacé", ticket.numSiegeRemplace ?? "Aucun"),
                 const SizedBox(height: 10),
                 _divider(),
                 _sectionTitle("Client"),
@@ -82,18 +110,60 @@ class PgTicket extends StatelessWidget {
                 _sectionTitle("Agent"),
                 _infoRow("Guichetière", ticket.nomGuichetiere),
                 _infoRow("Mat guichetière", ticket.matGuichetiere),
+                _infoRow("Controleur", ticket.nomGuichetiere),
+                _infoRow("Mat Controleur", ticket.matGuichetiere),
                 const SizedBox(height: 5),
                 _divider(),
                 _sectionTitle("Options"),
-                _infoRow("Est remplacé", _boolToStr(ticket.isRemplaced)),
-                _infoRow("Siège vacant", _boolToStr(ticket.siegeVacant)),
-                _infoRow("Absent", _boolToStr(ticket.oldAbsent)),
+              
+                _infoRow("Absent", _boolToStr(ticket.siegeVacant)),
+                _infoRow("Etais absent", _boolToStr(ticket.oldAbsent)),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildTrajectoireWidgets(String? trajectoire) {
+    if (trajectoire == null || trajectoire.trim().isEmpty) {
+      return [Text("Non renseigné", style: TextStyle(color: Colors.grey))];
+    }
+
+    final segments = trajectoire.split("->");
+
+    List<Widget> widgets = [];
+    for (int i = 0; i < segments.length; i++) {
+      widgets.add(
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.blueGrey.shade50,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.blueGrey.shade200),
+          ),
+          child: Text(
+            segments[i],
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.blueGrey.shade800,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      );
+      if (i != segments.length - 1) {
+        widgets.add(
+            const Icon(Icons.arrow_forward, size: 16, color: Colors.blueGrey));
+      }
+      //  if(i == segments.length - 1) {
+      //   final ville = segments[1].split(",");
+      //   widgets.add(Text("-"));
+      // }
+    }
+
+    return widgets;
   }
 
   Widget _infoRow(String label, String? value) {
@@ -105,14 +175,17 @@ class PgTicket extends StatelessWidget {
         children: [
           Flexible(
             flex: 4,
-            child: Text(
-              "$label :",
-              maxLines: 1,
-              softWrap: false,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                  color: Colors.black87),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                "$label :",
+                maxLines: 1,
+                softWrap: false,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    color: Colors.black87),
+              ),
             ),
           ),
           Flexible(
