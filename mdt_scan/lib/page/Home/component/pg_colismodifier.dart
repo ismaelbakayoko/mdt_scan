@@ -6,6 +6,17 @@ import 'package:intl/intl.dart';
 class PgColisModifier extends StatelessWidget {
   const PgColisModifier({super.key});
 
+  String formatDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return "Date invalide";
+
+    try {
+      DateTime date = DateTime.parse(dateString); // parse ISO format
+      return DateFormat('dd/MM/yyyy à HH:mm').format(date);
+    } catch (e) {
+      return "Date invalide";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<HomeController>();

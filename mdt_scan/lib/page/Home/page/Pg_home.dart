@@ -1,6 +1,7 @@
 import 'package:ai_barcode_scanner/ai_barcode_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mdt_scan/component/api_service.dart';
 import 'package:mdt_scan/page/Home/controller/home_controller.dart';
 
 class PgHome extends StatelessWidget {
@@ -16,6 +17,14 @@ class PgHome extends StatelessWidget {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
+          actions: [
+            IconButton(
+                icon: Icon(Icons.settings,color: Colors.white,),
+                onPressed: () {
+                  showApiSettingsDialog(context);
+                })
+                
+          ],
         ),
         body: Column(
           children: [

@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiController extends GetxController {
   static ApiController get instance => Get.find();
-  var baseUrl = "http://192.168.115.133".obs;
+  var baseUrl = "http://192.168.151.133".obs;
   var port = "3080".obs;
 
   String get apiUrl {

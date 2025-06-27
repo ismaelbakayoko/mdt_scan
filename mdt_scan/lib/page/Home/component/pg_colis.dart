@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mdt_scan/component/color_config.dart';
+import 'package:intl/intl.dart';
 import 'package:mdt_scan/component/toggle_widget.dart';
 import 'package:mdt_scan/page/Home/controller/home_controller.dart';
 
@@ -16,11 +16,32 @@ class _PgColisState extends State<PgColis> {
   Widget build(BuildContext context) {
     final controller = Get.find<HomeController>();
 
+        String formatDate(String? dateString) {
+      if (dateString == null || dateString.isEmpty) return "Date invalide";
+
+      try {
+        DateTime date = DateTime.parse(dateString); // parse ISO format
+        return DateFormat('dd/MM/yyyy à HH:mm').format(date);
+      } catch (e) {
+        return "Date invalide";
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Détails du Colis"),
-        backgroundColor: GColor.bleu,
+        title: const Text("Détails du Colis",style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.red,
         centerTitle: true,
+         leading: IconButton(
+            onPressed: () {
+              Get.back();
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+              size: 30,
+            ),
+          )
       ),
       body: Obx(() {
         final colis = controller.listColi.value;
@@ -36,7 +57,7 @@ class _PgColisState extends State<PgColis> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _sectionTitle("Références"),
-                  _infoRow("Code Gare", colis.codeGare),
+                  _infoRow("Nom Gare", colis.codeGare),
                   _infoRow("Code Colis", colis.codeColis),
                   _infoRow("Réf. Voyage", colis.refVoyage),
                   _infoRow("Réf. Envoi", colis.refEnvoie),
@@ -48,7 +69,8 @@ class _PgColisState extends State<PgColis> {
                   _infoRow("Description", colis.description),
                   _infoRow("Prix", "${colis.prixColis ?? 0} FCFA"),
                   _infoRow("Valeur estimée", "${colis.valeurExtime ?? 0} FCFA"),
-                  _infoRow("Date colis", colis.datecolis),
+                  _infoRow("Date colis", formatDate(colis.datecolis)),
+                   _infoRow("Colis introuvable", _boolToStr(colis.colisintrouvable)),
                   const SizedBox(height: 10),
                   _divider(),
                   _sectionTitle("Expéditeur"),
@@ -64,18 +86,18 @@ class _PgColisState extends State<PgColis> {
                   _divider(),
                   _sectionTitle("Suivi"),
                   _infoRow("Envoyé", _boolToStr(colis.envoyer)),
-                  _infoRow("Date envoi", colis.dateenvoie),
+                  _infoRow("Date envoi", formatDate(colis.dateenvoie)),
                   _infoRow("Colis reçu", _boolToStr(colis.colisrecu)),
-                  _infoRow("Date réception", colis.daterecu),
+                  _infoRow("Date réception", formatDate(colis.daterecu)),
                   _infoRow("Colis retiré", _boolToStr(colis.colisretirer)),
-                  _infoRow("Date retrait", colis.dateretrait),
+                  _infoRow("Date retrait", formatDate(colis.dateretrait)),
                   const SizedBox(height: 10),
                   _divider(),
                   _sectionTitle("Anomalies"),
                   _infoRow("Colis annulé", _boolToStr(colis.colisanuler)),
-                  _infoRow("Date annulation", colis.dateanulation),
+                  _infoRow("Date annulation", formatDate(colis.dateanulation)),
                   _infoRow("Colis modifié", _boolToStr(colis.colismodifier)),
-                  _infoRow("Date modification", colis.datemodification),
+                  _infoRow("Date modification", formatDate(colis.datemodification)),
                   const SizedBox(height: 10),
                   _divider(),
                   if (colis.photocolis != null && colis.photocolis!.isNotEmpty)
@@ -185,10 +207,10 @@ class _PgColisState extends State<PgColis> {
             child: Text(
               value ?? "Non renseigné",
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+             
               softWrap: false,
               style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 13,
                   color: Colors.blueGrey.shade700,
                   fontWeight: FontWeight.w500),
             ),
@@ -203,8 +225,8 @@ class _PgColisState extends State<PgColis> {
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         title,
-        style: TextStyle(
-            fontSize: 17, fontWeight: FontWeight.bold, color: GColor.bleu),
+        style:const TextStyle(
+            fontSize: 17, fontWeight: FontWeight.bold, color:Colors.red),
       ),
     );
   }
