@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:ai_barcode_scanner/ai_barcode_scanner.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -8,13 +7,11 @@ import 'package:mdt_scan/component/error_function.dart';
 import 'package:mdt_scan/model/bagage_model.dart';
 import 'package:mdt_scan/model/colis_anuler_model.dart';
 import 'package:mdt_scan/model/colis_model.dart';
-import 'package:mdt_scan/model/colis_modifier_model.dart';
 import 'package:mdt_scan/model/convoi_model.dart';
 import 'package:mdt_scan/model/ticket_model.dart';
 import 'package:mdt_scan/page/Home/component/pg_bagage.dart';
 import 'package:mdt_scan/page/Home/component/pg_colis.dart';
 import 'package:mdt_scan/page/Home/component/pg_colisannuler.dart';
-import 'package:mdt_scan/page/Home/component/pg_colismodifier.dart';
 import 'package:mdt_scan/page/Home/component/pg_convoi.dart';
 import 'package:mdt_scan/page/Home/component/pg_ticket.dart';
 import 'package:toastification/toastification.dart';
@@ -34,7 +31,9 @@ class HomeController extends GetxController {
   var listConvoi = ConvoiModel().obs;
   var listTicket = TicketModel().obs;
   var colisAnnuler = ColisAnnuleModel().obs;
-  var colisModifier = ColisModifieModel().obs;
+  var colisModifier = <ColisModifier>[].obs;
+
+  var selecColis = false.obs;
 
   Future<void> onInit() async {
     super.onInit();
@@ -78,8 +77,10 @@ class HomeController extends GetxController {
       if (donnee["success"] == true) {
         var data = donnee["resultat"];
         closeLoadingCircular();
-
+        ctrlScan.pause();
+        // ctrlScan.dispose();
         var type = donnee["type"];
+
         print(type);
         switch (type) {
           case "BAGAGES":
@@ -90,15 +91,22 @@ class HomeController extends GetxController {
             break;
           case "TICKETS":
             listTicket.value = TicketModel.fromJson(data);
+
             break;
           case "COLIS":
+            var colis = donnee["colisModifier"] as List;
             listColi.value = ColisModel.fromJson(data);
+            if (colis.isNotEmpty) {
+              colisModifier.value =
+                  colis.map((json) => ColisModifier.fromJson(json)).toList();
+            }
+            print(colis);
+
             break;
           case "COLIS_ANNULERS":
             colisAnnuler.value = ColisAnnuleModel.fromJson(data);
             break;
           case "COLIS_MODIFIES":
-            colisModifier.value = ColisModifieModel.fromJson(data);
             break;
         }
         scannedValue.value = "";
@@ -117,7 +125,7 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       closeLoadingCircular();
-      errorDialog("Erreur", errorText: "Une erreur s’est produite : $e");
+      errorDialoge(errorText: "Connecter vous a internet");
       return false;
     }
   }
@@ -126,22 +134,22 @@ class HomeController extends GetxController {
     switch (type) {
       case "TICKETS":
         print("direction‼️‼️");
-        Get.to(() => PgTicket());
+        Get.offAll(() => PgTicket());
         break;
       case "BAGAGES":
-        Get.to(() => const PgBagage());
+        Get.offAll(() => const PgBagage());
         break;
       case "CONVOIS":
-        Get.to(() => const PgConvoi());
+        Get.offAll(() => const PgConvoi());
         break;
       case "COLIS":
-        Get.to(() => const PgColis());
+        Get.offAll(() => const PgColis());
         break;
       case "COLIS_ANNULERS":
-        Get.to(() => const PgColisAnnuler());
+        Get.offAll(() => const PgColisAnnuler());
         break;
       case "COLIS_MODIFIES":
-        Get.to(() => const PgColisModifier());
+        Get.offAll(() => const PgColis());
         break;
       default:
         print("Aucune vue associée au type : $type");
@@ -198,7 +206,7 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       closeLoadingCircular();
-      errorDialog("Erreur", errorText: "Une erreur s’est produite : $e");
+      errorDialoge(errorText: "Connecter vous a internet");
       return false;
     }
   }

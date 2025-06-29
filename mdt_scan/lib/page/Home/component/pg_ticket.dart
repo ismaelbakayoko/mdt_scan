@@ -55,8 +55,8 @@ class PgTicket extends StatelessWidget {
                 _sectionTitle("Voyage"),
                 _infoRow("Réf voyage", ticket.refVoyage),
                 _infoRow("Matricule car", ticket.matCar),
-                 _infoRow("Conducteur", ticket.nomConducteur),
-                  _infoRow("Mat conducteur", ticket.matConducteur),
+                _infoRow("Conducteur", ticket.nomConducteur),
+                _infoRow("Mat conducteur", ticket.matConducteur),
                 const SizedBox(height: 5),
                 _divider(),
                 _sectionTitle("Trajet"),
@@ -67,7 +67,7 @@ class PgTicket extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    const  Text(
+                      const Text(
                         "Trajectoire :",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
@@ -109,13 +109,12 @@ class PgTicket extends StatelessWidget {
                 _divider(),
                 _sectionTitle("Agent"),
                 _infoRow("Guichetière", ticket.nomGuichetiere),
-                _infoRow("Mat guichetière", ticket.matGuichetiere),
+                _infoRow("Mat. guichetière", ticket.matGuichetiere),
                 _infoRow("Controleur", ticket.nomGuichetiere),
-                _infoRow("Mat Controleur", ticket.matGuichetiere),
+                _infoRow("Mat. controleur", ticket.matGuichetiere),
                 const SizedBox(height: 5),
                 _divider(),
                 _sectionTitle("Options"),
-              
                 _infoRow("Absent", _boolToStr(ticket.siegeVacant)),
                 _infoRow("Etais absent", _boolToStr(ticket.oldAbsent)),
               ],

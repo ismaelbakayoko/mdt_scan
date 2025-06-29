@@ -14,7 +14,7 @@ class PgColisAnnuler extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
           title:
-              const Text("Colis annulé", style: TextStyle(color: Colors.white)),
+              const Text("Colis annulé", style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
           backgroundColor: Colors.red,
           centerTitle: true,
           leading: IconButton(
@@ -38,15 +38,26 @@ class PgColisAnnuler extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _sectionTitle("Informations générales"),
-                _infoRow("Code Colis", colis.codeColis),
-                _infoRow("Réf. Voyage", colis.refVoyage),
-                _infoRow("Code Gare", colis.codeGare),
+                _sectionTitle("Références"),
+                _infoRow("Code colis", colis.codeColis),
+                _infoRow("Réf. voyage", colis.refVoyage),
+                _infoRow("Nom gare", colis.codeGare),
                 const SizedBox(height: 10),
+                _sectionTitle("Description & valeur"),
+               Text(
+                      "${colis.description}",
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.blueGrey.shade700,
+                          fontWeight: FontWeight.w500),
+                    ),
+                _infoRow("Prix", "${colis.prixcolis ?? 0} FCFA"),
+                _infoRow("Valeur estimée", "${colis.valeurestimee ?? 0} FCFA"),
+                _infoRow("Date colis", _formatDate(colis.datecolis)),
                 _divider(),
                 _sectionTitle("Détails de l'annulation"),
                 _infoRow("Motif", colis.motifAnnulation),
-                _infoRow("Montant Retenu", "${colis.montantRetenu ?? 0} FCFA"),
+                _infoRow("Montant retenu", "${colis.montantRetenu ?? 0} FCFA"),
                 _infoRow(
                     "Remise appliquée", "${colis.remiseAnnulation ?? 0} %"),
                 _infoRow(
@@ -54,8 +65,28 @@ class PgColisAnnuler extends StatelessWidget {
                 const SizedBox(height: 10),
                 _divider(),
                 _sectionTitle("Gestion"),
-                _infoRow("Matricule Gestionnaire", colis.matGestionnaireColis),
+                _infoRow("Nom gestionnaire", colis.nomGestionnaireColis),
+                _infoRow("Mat. gestionnaire", colis.matGestionnaireColis),
                 _infoRow("Payé en ligne", _boolToStr(colis.payerEnLigne)),
+                if (colis.photocolis != null && colis.photocolis!.isNotEmpty)
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _sectionTitle("Photo du Colis"),
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          height: 200,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
+                            image: DecorationImage(
+                              image: NetworkImage(colis.photocolis!),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ])
               ],
             ),
           ),
@@ -63,8 +94,7 @@ class PgColisAnnuler extends StatelessWidget {
       ),
     );
   }
-
-  Widget _infoRow(String label, String? value) {
+ Widget _infoRow(String label, String? value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
@@ -91,10 +121,9 @@ class PgColisAnnuler extends StatelessWidget {
             child: Text(
               value ?? "Non renseigné",
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               softWrap: false,
               style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 13,
                   color: Colors.blueGrey.shade700,
                   fontWeight: FontWeight.w500),
             ),
@@ -110,7 +139,7 @@ class PgColisAnnuler extends StatelessWidget {
       child: Text(
         title,
         style: const TextStyle(
-            fontSize: 17, fontWeight: FontWeight.bold, color:Colors.red),
+            fontSize: 17, fontWeight: FontWeight.bold, color: Colors.red),
       ),
     );
   }

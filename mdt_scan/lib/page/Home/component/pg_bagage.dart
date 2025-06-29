@@ -58,23 +58,23 @@ class _PgBagageState extends State<PgBagage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _sectionTitle("Informations Générales"),
+                  _sectionTitle("Références"),
                   _infoRow("Code bagage", bagage.codeBagage),
                   _infoRow("Réf. voyage", bagage.refVoyage),
                   _infoRow("Réf. envoie", bagage.refEnvoie),
+                  _infoRow("Matricule car", bagage.matCar),
+                  _infoRow("conducteur", bagage.nomConducteur),
 
-                  _infoRow("Estimation", "${bagage.valeurEstimee ?? 0} FCFA"),
-                  _infoRow("Prix bagage", "${bagage.prixBagage ?? 0} FCFA"),
                   _infoRow("Date enrg", formatDate(bagage.dateBagage)),
                   const SizedBox(height: 10),
                   _divider(),
-                  _sectionTitle("Statut d'envoi"),
+                  _sectionTitle("Suivi"),
                   _infoRow("Mis dans le car", _boolToStr(bagage.envoyer)),
                   _infoRow("Date envoie", formatDate(bagage.dateEnvoie)),
                   _infoRow("Introuvable", _boolToStr(bagage.bagageIntrouvable)),
 
                   _divider(),
-                  _sectionTitle("Description"),
+                  _sectionTitle("Description & valeur"),
                   Text(
                     bagage.description.toString(),
                     style: TextStyle(
@@ -82,20 +82,16 @@ class _PgBagageState extends State<PgBagage> {
                         color: Colors.blueGrey.shade700,
                         fontWeight: FontWeight.w500),
                   ),
+                  _infoRow("Estimation", "${bagage.valeurEstimee ?? 0} FCFA"),
+                  _infoRow("Prix bagage", "${bagage.prixBagage ?? 0} FCFA"),
                   const SizedBox(height: 10),
                   _divider(),
                   _sectionTitle("Informations client"),
                   _infoRow("Code client", bagage.codeClient),
+                  _infoRow("Siège", bagage.numSiege),
                   // _infoRow("Nom client", bagage.nomClient),
                   _infoRow("Contact", bagage.contactClient),
-                  const SizedBox(height: 10),
-                  _divider(),
-                  _sectionTitle("Détails voyage"),
-                  _infoRow("Siège", bagage.numSiege),
-                  _infoRow("Matricule car", bagage.matCar),
-                  _infoRow("conducteur", bagage.nomConducteur),
-                  // _infoRow("Code gare", bagage.codeGare),
-                  // _infoRow("Nom gare", bagage.nomGare),
+
                   const SizedBox(height: 10),
                   _divider(),
                   if (bagage.photoBagage != null &&
@@ -126,7 +122,7 @@ class _PgBagageState extends State<PgBagage> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 6),
                     child: Text(
-                      "Modifier le babage",
+                      "Modifier le bagage",
                       style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,

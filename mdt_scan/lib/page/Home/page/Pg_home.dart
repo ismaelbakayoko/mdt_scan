@@ -4,11 +4,25 @@ import 'package:get/get.dart';
 import 'package:mdt_scan/component/api_service.dart';
 import 'package:mdt_scan/page/Home/controller/home_controller.dart';
 
-class PgHome extends StatelessWidget {
+class PgHome extends StatefulWidget {
   PgHome({super.key});
+
+  @override
+  State<PgHome> createState() => _PgHomeState();
+}
+
+class _PgHomeState extends State<PgHome> {
   final HomeController controller = Get.find();
+
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  // }
+
   @override
   Widget build(BuildContext context) {
+    controller.ctrlScan.start();
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.red,
@@ -19,11 +33,13 @@ class PgHome extends StatelessWidget {
           centerTitle: true,
           actions: [
             IconButton(
-                icon: Icon(Icons.settings,color: Colors.white,),
+                icon: Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                ),
                 onPressed: () {
                   showApiSettingsDialog(context);
                 })
-                
           ],
         ),
         body: Column(
