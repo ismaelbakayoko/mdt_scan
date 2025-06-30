@@ -15,20 +15,37 @@ class WdgInfoLigne extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      textAlign: TextAlign.start,
-      text: TextSpan(
-        style: TextStyle(
-            fontWeight: FontWeight.w500, fontSize: 15, color: Colors.black),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical:0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextSpan(text: title),
-          TextSpan(
-            text: value.toString(),
-            style: TextStyle(
-                color: color ?? Colors.orange.shade700,
-                fontWeight: FontWeight.w600,
-                fontSize: 16),
-          )
+          Flexible(
+            flex: 4,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                "$title",
+                maxLines: 1,
+                softWrap: false,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    color: Colors.black87),
+              ),
+            ),
+          ),
+          Flexible(
+            flex: 6,
+            child: Text(
+              value ,
+              maxLines: 1,
+              softWrap: false,
+              style: TextStyle(
+                  fontSize: 13, color: color, fontWeight: FontWeight.w500),
+            ),
+          ),
         ],
       ),
     );

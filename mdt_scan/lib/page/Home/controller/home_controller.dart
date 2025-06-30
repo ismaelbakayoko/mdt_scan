@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:ai_barcode_scanner/ai_barcode_scanner.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:mdt_scan/component/api_controller.dart';
@@ -23,8 +24,7 @@ class HomeController extends GetxController {
   var torchState = false;
   var qrResult = "Aucun QR Code scanné".obs;
   var scannedValue = "".obs;
-  final MobileScannerController ctrlScan =
-      MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates);
+  late MobileScannerController ctrlScan = MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates);
   var isLoadEntretien = false.obs;
   var listColi = ColisModel().obs;
   var listBagage = BagagesModel().obs;
@@ -32,11 +32,20 @@ class HomeController extends GetxController {
   var listTicket = TicketModel().obs;
   var colisAnnuler = ColisAnnuleModel().obs;
   var colisModifier = <ColisModifier>[].obs;
+  var isProcessing = false.obs;
 
   var selecColis = false.obs;
 
   Future<void> onInit() async {
     super.onInit();
+    ctrlScan =
+        MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates);
+  }
+
+  @override
+  void onClose() {
+    ctrlScan.dispose();
+    super.onClose();
   }
 
   String getSuccessMessage(String type) {
@@ -54,16 +63,14 @@ class HomeController extends GetxController {
   }
 
   Future<bool> fetchInfoTicket(
-    context, {
+    BuildContext context, {
     required String id,
     required String reference,
   }) async {
-    print("❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌");
-    var bodyData = {
-      'id': id,
-      'reference': reference,
-    };
-    print(bodyData);
+    colisModifier.clear();
+    final bodyData = {'id': id, 'reference': reference};
+    print("🟡 Données envoyées : $bodyData");
+
     loadingCircular();
     try {
       final response = await http.post(
@@ -71,45 +78,52 @@ class HomeController extends GetxController {
         headers: {'Content-Type': 'application/json'},
         body: json.encode(bodyData),
       );
-      var donnee = json.decode(response.body);
-      print(donnee);
+
+      final donnee = json.decode(response.body);
+      print("🟢 Réponse : $donnee");
 
       if (donnee["success"] == true) {
-        var data = donnee["resultat"];
-        closeLoadingCircular();
-        ctrlScan.pause();
-        // ctrlScan.dispose();
-        var type = donnee["type"];
+        final data = donnee["resultat"];
+        final type = donnee["type"];
+        print("🧩 Type détecté : $type");
 
-        print(type);
-        switch (type) {
-          case "BAGAGES":
-            listBagage.value = BagagesModel.fromJson(data);
-            break;
-          case "CONVOIS":
-            listConvoi.value = ConvoiModel.fromJson(data);
-            break;
-          case "TICKETS":
-            listTicket.value = TicketModel.fromJson(data);
+        // Traitement en fonction du type
+        try {
+          switch (type) {
+            case "BAGAGES":
+              listBagage.value = BagagesModel.fromJson(data);
+              break;
+            case "CONVOIS":
+              listConvoi.value = ConvoiModel.fromJson(data);
+              break;
+            case "TICKETS":
+              listTicket.value = TicketModel.fromJson(data);
+              break;
+            case "COLIS":
+              listColi.value = ColisModel.fromJson(data);
+              final rawColis = donnee["colisModifier"];
+              if (rawColis != null && rawColis is List && rawColis.isNotEmpty) {
+                colisModifier.value =
+                    rawColis.map((e) => ColisModifier.fromJson(e)).toList();
+              }
 
-            break;
-          case "COLIS":
-            var colis = donnee["colisModifier"] as List;
-            listColi.value = ColisModel.fromJson(data);
-            if (colis.isNotEmpty) {
-              colisModifier.value =
-                  colis.map((json) => ColisModifier.fromJson(json)).toList();
-            }
-            print(colis);
-
-            break;
-          case "COLIS_ANNULERS":
-            colisAnnuler.value = ColisAnnuleModel.fromJson(data);
-            break;
-          case "COLIS_MODIFIES":
-            break;
+              break;
+            case "COLIS_ANNULERS":
+              colisAnnuler.value = ColisAnnuleModel.fromJson(data);
+              break;
+            case "COLIS_MODIFIES":
+              // À implémenter si besoin
+              break;
+          }
+        } catch (e) {
+          print("⚠️ Erreur lors de la conversion JSON : $e");
+          errorDialoge(errorText: "Erreur lors du traitement des données");
+          return false;
         }
+
+        // Navigation
         scannedValue.value = "";
+        await ctrlScan.pause(); // Pause seulement après tout
         _navigateToPageByType(type);
 
         snackBar(
@@ -119,14 +133,15 @@ class HomeController extends GetxController {
         );
         return true;
       } else {
-        closeLoadingCircular();
-        errorDialog("", errorText: donnee["message"]);
+        errorDialoge(errorText: donnee["message"] ?? "Erreur inconnue");
         return false;
       }
     } catch (e) {
-      closeLoadingCircular();
-      errorDialoge(errorText: "Connecter vous a internet");
+      print("❌ Erreur API : $e");
+      errorDialoge(errorText: "Erreur de connexion. Vérifiez votre Internet.");
       return false;
+    } finally {
+      closeLoadingCircular(); // Toujours fermer
     }
   }
 
@@ -143,7 +158,7 @@ class HomeController extends GetxController {
         Get.offAll(() => const PgConvoi());
         break;
       case "COLIS":
-        Get.offAll(() => const PgColis());
+        Get.offAll(PgColis());
         break;
       case "COLIS_ANNULERS":
         Get.offAll(() => const PgColisAnnuler());

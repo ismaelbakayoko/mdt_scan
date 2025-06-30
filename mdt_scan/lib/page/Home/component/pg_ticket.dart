@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mdt_scan/page/Home/controller/home_controller.dart';
+import 'package:mdt_scan/page/Home/page/Pg_home.dart';
 
 class PgTicket extends StatelessWidget {
   PgTicket({super.key});
@@ -15,109 +16,121 @@ class PgTicket extends StatelessWidget {
       if (dateString == null || dateString.isEmpty) return "Date invalide";
 
       try {
-        DateTime date = DateTime.parse(dateString); // parse ISO format
+        DateTime date = DateTime.parse(dateString);
         return DateFormat('dd/MM/yyyy').format(date);
       } catch (e) {
         return "Date invalide";
       }
     }
 
-    return Scaffold(
-      appBar: AppBar(
-          title: const Text(
-            "Détails du ticket",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Colors.red,
-          centerTitle: true,
-          leading: IconButton(
-            onPressed: () {
-              controller.scannedValue.value = "";
-              Get.back();
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-              size: 30,
+    return PopScope(
+     canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          Get.offAll(() => const PgHome()); 
+        }
+      },
+
+      child: Scaffold(
+        appBar: AppBar(
+            title: const Text(
+              "Détails du ticket",
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
-          )),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          elevation: 4,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _sectionTitle("Voyage"),
-                _infoRow("Réf voyage", ticket.refVoyage),
-                _infoRow("Matricule car", ticket.matCar),
-                _infoRow("Conducteur", ticket.nomConducteur),
-                _infoRow("Mat conducteur", ticket.matConducteur),
-                const SizedBox(height: 5),
-                _divider(),
-                _sectionTitle("Trajet"),
-                _infoRow("Gare d'achat", ticket.nomGare),
-                _infoRow("Destination", ticket.destination),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Trajectoire :",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          color: Colors.black87,
+            backgroundColor: Colors.red,
+            centerTitle: true,
+            leading: IconButton(
+              onPressed: () {
+                controller.ctrlScan.start();
+                Get.offAll(PgHome());
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 30,
+              ),
+            )),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            elevation: 4,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _sectionTitle("Voyage"),
+                  _infoRow("Réf voyage", ticket.refVoyage),
+                  _infoRow("Matricule car", ticket.matCar),
+                  _infoRow("Conducteur", ticket.nomConducteur),
+                  _infoRow("Mat conducteur", ticket.matConducteur),
+                  const SizedBox(height: 5),
+                  _divider(),
+                  _sectionTitle("Trajet"),
+                  _infoRow("Gare d'achat", ticket.nomGare),
+                  _infoRow("Destination", ticket.destination),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Trajectoire :",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            color: Colors.black87,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Expanded(
-                        child: Wrap(
-                          spacing: 4,
-                          runSpacing: 2,
-                          children:
-                              _buildTrajectoireWidgets(ticket.trajectoire),
+                        const SizedBox(height: 4),
+                        Expanded(
+                          child: Wrap(
+                            spacing: 4,
+                            runSpacing: 2,
+                            children:
+                                _buildTrajectoireWidgets(ticket.trajectoire),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 5),
-                _divider(),
-                _sectionTitle("Siège"),
-                _infoRow("Numéro siège", ticket.numSiege),
-                _infoRow("Siège remplacé", ticket.numSiegeRemplace ?? "Aucun"),
-                const SizedBox(height: 10),
-                _divider(),
-                _sectionTitle("Client"),
-                _infoRow("Code client", ticket.codeClient),
-                _infoRow("Contact client", ticket.contactClient),
-                const SizedBox(height: 5),
-                _divider(),
-                _sectionTitle("Informations Ticket"),
-                _infoRow("Type ticket", ticket.typeTicket),
-                _infoRow("Prix", "${ticket.prixTicket ?? 0} FCFA"),
-                _infoRow("Date", formatDate(ticket.dateTicket)),
-                _infoRow("Ticket utilisé", _boolToStr(ticket.ticketUtiliser)),
-                _infoRow("Paiement ligne", _boolToStr(ticket.paiementEnLigne)),
-                const SizedBox(height: 5),
-                _divider(),
-                _sectionTitle("Agent"),
-                _infoRow("Guichetière", ticket.nomGuichetiere),
-                _infoRow("Mat. guichetière", ticket.matGuichetiere),
-                _infoRow("Controleur", ticket.nomGuichetiere),
-                _infoRow("Mat. controleur", ticket.matGuichetiere),
-                const SizedBox(height: 5),
-                _divider(),
-                _sectionTitle("Options"),
-                _infoRow("Absent", _boolToStr(ticket.siegeVacant)),
-                _infoRow("Etais absent", _boolToStr(ticket.oldAbsent)),
-              ],
+                  const SizedBox(height: 5),
+                  _divider(),
+                  _sectionTitle("Siège"),
+                  _infoRow("Numéro siège", ticket.numSiege),
+                  _infoRow(
+                      "Siège remplacé", ticket.numSiegeRemplace ?? "Aucun"),
+                  const SizedBox(height: 10),
+                  _divider(),
+                  _sectionTitle("Client"),
+                  _infoRow("Code client", ticket.codeClient),
+                  _infoRow("Contact client", ticket.contactClient),
+                  const SizedBox(height: 5),
+                  _divider(),
+                  _sectionTitle("Informations Ticket"),
+                  _infoRow("Type ticket", ticket.typeTicket),
+                  _infoRow("Prix", "${ticket.prixTicket ?? 0} FCFA"),
+                  _infoRow("Date", formatDate(ticket.dateTicket)),
+                  _infoRow("Ticket utilisé", _boolToStr(ticket.ticketUtiliser)),
+                  _infoRow(
+                      "Paiement ligne", _boolToStr(ticket.paiementEnLigne)),
+                  const SizedBox(height: 5),
+                  _divider(),
+                  _sectionTitle("Agent"),
+                  _infoRow("Guichetière", ticket.nomGuichetiere),
+                  _infoRow("Mat. guichetière", ticket.matGuichetiere),
+                  _infoRow("Controleur", ticket.nomGuichetiere),
+                  _infoRow("Mat. controleur", ticket.matGuichetiere),
+                  const SizedBox(height: 5),
+                  _divider(),
+                  _sectionTitle("Options"),
+                  _infoRow("Absent", _boolToStr(ticket.siegeVacant)),
+                  _infoRow("Etais absent", _boolToStr(ticket.oldAbsent)),
+                ],
+              ),
             ),
           ),
         ),
